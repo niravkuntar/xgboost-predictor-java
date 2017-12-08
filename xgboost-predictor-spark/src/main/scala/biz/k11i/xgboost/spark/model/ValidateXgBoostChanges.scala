@@ -41,7 +41,7 @@ object ValidateXgBoostChanges {
     val preDFCached = predDF.persist(StorageLevel.MEMORY_ONLY)
 
     val dfWithTransform = binaryClassifier.transform(preDFCached)
-    val dfWithTransformImpl = binaryClassifier.transformImpl(preDFCached)
+//    val dfWithTransformImpl = binaryClassifier.transformImpl(preDFCached)
 
     import spark.implicits._
     val outputDF1 = dfWithTransform.withColumnRenamed("probability", "probabilities").map { row =>
@@ -50,13 +50,13 @@ object ValidateXgBoostChanges {
       (vtc, score)
     }.toDF("vtc", "score").rdd.map(row => List(row(0).toString, row(1).toString).mkString("\t"))
 
-    val outputDF2 = dfWithTransformImpl.withColumnRenamed("probability", "probabilities").map { row =>
-      val vtc = row.getAs[String]("vtc")
-      val score = row.getAs[Vector]("probabilities")(1)
-      (vtc, score)
-    }.toDF("vtc", "score").rdd.map(row => List(row(0).toString, row(1).toString).mkString("\t"))
+//    val outputDF2 = dfWithTransformImpl.withColumnRenamed("probability", "probabilities").map { row =>
+//      val vtc = row.getAs[String]("vtc")
+//      val score = row.getAs[Vector]("probabilities")(1)
+//      (vtc, score)
+//    }.toDF("vtc", "score").rdd.map(row => List(row(0).toString, row(1).toString).mkString("\t"))
 
     outputDF1 coalesce 1 saveAsTextFile outputPath1
-    outputDF2 coalesce 1 saveAsTextFile outputPath2
+//    outputDF2 coalesce 1 saveAsTextFile outputPath2
   }
 }
